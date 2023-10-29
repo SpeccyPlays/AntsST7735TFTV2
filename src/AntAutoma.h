@@ -9,8 +9,8 @@ enum state {WANDER = 0, SEEK = 1};
 class Ant {
     int16_t screenWidth = 160;
     int16_t screenHeight = 128;
-    int8_t maxSpeed = 10;
-    int8_t maxForce = 2;
+    int8_t maxSpeed = 4;
+    int8_t maxForce = 1;
     public :
     void resetAnt(uint16_t screenWidth, uint16_t screenHeight, byte velocity);
     int16_t getCurrentX();
@@ -18,16 +18,17 @@ class Ant {
     int16_t getOldX();
     int16_t getOldY();
     float getAngle();
-    CoOrds normalise(CoOrds temp);
-    CoOrds setDesired(int16_t x, int16_t y);
+    CoOrds setMagnitude(CoOrds temp, int8_t newMag);
+    void setDesired(int16_t x, int16_t y);
     void calculateVelocties();
+    void wandering();
     void steering();
     void moveAnt();
     ;
     private :
     CoOrds currentPos;//where we're at now
     CoOrds oldPos;//used to remove ant from screen
-    CoOrds desired;//where we want to go
+    CoOrds desired;//where we want to go   
     float angle;//uses radians
     CoOrds velocity;
     CoOrds desiredVelocity;

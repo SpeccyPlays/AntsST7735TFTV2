@@ -11,44 +11,73 @@ void Ant::resetAnt(uint16_t screenWidth, uint16_t screenHeight, byte velocity){
     this->desired.x = screenWidth /2;
     this->desired.y = screenHeight /2;
 };
-CoOrds Ant::setDesired(int16_t x, int16_t y){
-    CoOrds temp;
-    temp.x = x;
-    temp.y = y;
-    return temp;
+void Ant::setDesired(int16_t x, int16_t y){
+    desired.x = x;
+    desired.y = y;
 };
-CoOrds Ant::normalise(CoOrds temp){
+CoOrds Ant::setMagnitude(CoOrds temp, int8_t newMag){
     float length = sqrt((temp.x * temp.x + temp.y * temp.y));
-    if (length > 0){
-        temp.x /= length;
-        temp.y /= length;
+    if (length != 0){
+        temp.x =  (temp.x / length) * newMag;
+        temp.y = (temp.y / length) * newMag;
     }
     return temp;
 };
+void Ant::wandering(){
+    int16_t tempY = currentPos.y; 
+    tempY += ((velocity.y + 4) * sin(angle));
+    int16_t tempX = currentPos.x; 
+    tempX += ((velocity.x + 4) * cos(angle));
+    float randAngle = random(360) * PI / 180.0;
+    uint8_t randomDistance = random(5 * 100) / 100;
+    tempX += randomDistance * cos(randAngle);
+    tempY += randomDistance * sin(randAngle);
+    setDesired(tempX, tempY);
+}
 void Ant::calculateVelocties(){
+    /*
+    
+    */
     desiredVelocity.x = (desired.x - currentPos.x);
     desiredVelocity.y = (desired.y - currentPos.y);
-    desiredVelocity = normalise(desiredVelocity);
+    desiredVelocity = setMagnitude(desiredVelocity, maxSpeed);
     desiredVelocity.x *= maxSpeed;
     desiredVelocity.y *= maxSpeed;
+    if (desiredVelocity.x > maxSpeed){
+        desiredVelocity.x = maxSpeed;
+    }
+    else if (desiredVelocity.x < -maxSpeed){
+        desiredVelocity.x = -maxSpeed;
+    }
+    if (desiredVelocity.y > maxSpeed){
+        desiredVelocity.y = maxSpeed;
+    }
+    else if(desiredVelocity.y < -maxSpeed){
+        desiredVelocity.y = -maxSpeed;
+    }
 };
 void Ant::steering(){
     calculateVelocties();
     steeringForce.x = desiredVelocity.x - velocity.x;
     steeringForce.y = desiredVelocity.y - velocity.y;
-    steeringForce.x /= maxSpeed;
-    steeringForce.y /= maxSpeed;
-    steeringForce.x *= maxForce;
-    steeringForce.y *= maxForce;
+
+    if (steeringForce.x > maxForce){
+        steeringForce.x = maxForce;
+    }
+    else if (steeringForce.x < -maxForce){
+        steeringForce.x = -maxForce;
+    }
+    if (steeringForce.y > maxForce){
+        steeringForce.y = maxForce;
+    }
+    else if (steeringForce.y < -maxForce){
+        steeringForce.y = -maxForce;
+    }
     velocity.x += steeringForce.x;
     velocity.y += steeringForce.y;
 };
 void Ant::moveAnt(){
     /*
-    Find a point double the velocity of the ant
-    Generate a random angle between 1-6
-    Move temp x and y to that spot
-    Find the angle from ant to that spot
 
     */
     oldPos.x = currentPos.x;
@@ -65,15 +94,7 @@ void Ant::moveAnt(){
     else if (currentPos.y > screenHeight){
         currentPos.y = 0;
     }
-    int16_t tempY = currentPos.y; 
-    tempY += ((velocity.y + 2) * sin(angle));
-    int16_t tempX = currentPos.x; 
-    tempX += ((velocity.x + 2) * cos(angle));
-    float randAngle = random(360) * PI / 180.0;
-    uint8_t randomDistance = random(5, 10);
-    tempX = tempX + randomDistance * cos(randAngle);
-    tempY = tempY + randomDistance * sin(randAngle);
-    desired = setDesired(tempX, tempY);
+    wandering();
     steering();
     currentPos.x += velocity.x;
     currentPos.y += velocity.y;

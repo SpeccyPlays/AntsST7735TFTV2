@@ -2,14 +2,17 @@
 #include "AntAutoma.h"
 
 void Ant::resetAnt(uint16_t screenWidth, uint16_t screenHeight, byte velocity){
-    this->currentPos.x = screenWidth; //random(10, screenWidth - 10);
-    this->currentPos.y = screenHeight;//random(10, screenHeight - 10);
+    this->currentPos.x = random(boundary, screenWidth - boundary); //random(10, screenWidth - 10);
+    this->currentPos.y = random(boundary, screenHeight = boundary);//random(10, screenHeight - 10);
     this->angle = random(360) * PI / 180.0;//convert to radians don't forget
     this->antState = WANDER;
     this->velocity.x = 2;
     this->velocity.y = 2;
     this->desired.x = screenWidth /2;
     this->desired.y = screenHeight /2;
+};
+void Ant::setState(state newState){
+    antState = newState;
 };
 void Ant::setDesired(int16_t x, int16_t y){
     desired.x = x;
@@ -23,17 +26,18 @@ CoOrds Ant::setMagnitude(CoOrds temp, int8_t newMag){
     }
     return temp;
 };
+void Ant::seeking(int16_t x, int16_t y){
+    setDesired(x, y);
+};
 void Ant::wandering(){
-    int16_t tempY = currentPos.y; 
-    tempY += ((velocity.y + 4) * sin(angle));
-    int16_t tempX = currentPos.x; 
-    tempX += ((velocity.x + 4) * cos(angle));
+    int16_t tempX = currentPos.x + velocity.x * wanderingDistance;
+    int16_t tempY = currentPos.y + velocity.y * wanderingDistance;
     float randAngle = random(360) * PI / 180.0;
-    uint8_t randomDistance = random(5 * 100) / 100;
+    uint8_t randomDistance = random(10, 30);
     tempX += randomDistance * cos(randAngle);
     tempY += randomDistance * sin(randAngle);
     setDesired(tempX, tempY);
-}
+};
 void Ant::calculateVelocties(){
     /*
     
@@ -82,42 +86,44 @@ void Ant::moveAnt(){
     */
     oldPos.x = currentPos.x;
     oldPos.y = currentPos.y;
-    if (currentPos.x < 0){
-        currentPos.x = screenWidth;
+    if (currentPos.x < boundary){
+        velocity.x += 2;
     }
-    else if (currentPos.x > screenWidth){
-        currentPos.x = 0;
+    else if (currentPos.x > screenWidth - boundary){
+        velocity.x -= 2;
     }
-    if (currentPos.y < 0){
-        currentPos.y = screenHeight;
+    if (currentPos.y < boundary){
+        velocity.y += 2;
     }
-    else if (currentPos.y > screenHeight){
-        currentPos.y = 0;
+    else if (currentPos.y > screenHeight - boundary){
+        velocity.y -= 2;
     }
-    wandering();
+    switch(antState){
+        case WANDER :
+        wandering();
+        break;
+        case SEEK :
+        break;
+    }
     steering();
     currentPos.x += velocity.x;
     currentPos.y += velocity.y;
 };
-float Ant::angleBetweenTwoPoints(int16_t x1, int16_t y1, int16_t x2, int16_t y2){
-    double angle = atan2(y2 - y1, x2 - x1);
-    if (angle < 0.0){
-        angle += 3.14 * 2;
-    }
-    return angle;
-};
 int16_t Ant::getCurrentX(){
-    return this->currentPos.x;
+    return currentPos.x;
 };
 int16_t Ant::getCurrentY(){
-    return this->currentPos.y;
+    return currentPos.y;
 };
 int16_t Ant::getOldX(){
-    return this->oldPos.x;
+    return oldPos.x;
 };
 int16_t Ant::getOldY(){
-    return this->oldPos.y;
+    return oldPos.y;
 };
-float Ant::getAngle(){
-    return this->angle;
+int16_t Ant::getDesiredX(){
+    return desired.x;
+};
+int16_t Ant::getDesiredY(){
+    return desired.y;
 };

@@ -12,7 +12,10 @@ TFT_ST7735 tft(SCREENWIDTH, SCREENHEIGHT);
 //set up ant
 Ant ants[10];
 byte amountOfAnts = 10;
-byte waitDelay = 150;
+byte waitDelay = 50;
+byte counter = 0;
+int8_t foodX = 0;
+int8_t foodY = 0;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -30,9 +33,28 @@ void loop() {
   for (byte i = 0; i < amountOfAnts; i++){
     tft.drawCircle(ants[i].getCurrentX(), ants[i].getCurrentY(), 2, TFT_WHITE);
     ants[i].moveAnt();
+    //tft.drawLine(ants[i].getCurrentX(), ants[i].getCurrentY(), ants[i].getDesiredX(), ants[i].getDesiredY(), TFT_WHITE);
   }
   delay(waitDelay);
   for (byte i = 0; i < amountOfAnts; i++){
     tft.drawCircle(ants[i].getOldX(), ants[i].getOldY(), 2, TFT_BLACK);
+    //tft.drawLine(ants[i].getCurrentX(), ants[i].getCurrentY(), ants[i].getDesiredX(), ants[i].getDesiredY(), TFT_BLACK);
+  }
+  counter ++;
+  if (counter % 150 == 0){
+    for (byte i = 0; i < amountOfAnts; i++){
+      ants[i].setState(WANDER);
+    }
+    counter = 0;
+    tft.drawCircle(foodX, foodY, 4, TFT_BLACK);
+  }
+  else if (counter % 100 == 0){
+    foodX = random(10, SCREENWIDTH - 10);
+    foodY = random(10, SCREENHEIGHT - 10);
+    for (byte i = 0; i < amountOfAnts; i++){
+      ants[i].setState(SEEK);
+      ants[i].setDesired(foodX, foodY);
+    }
+  tft.drawCircle(foodX, foodY, 4, TFT_GREEN);
   }
 }

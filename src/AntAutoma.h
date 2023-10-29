@@ -11,20 +11,22 @@ class Ant {
     int16_t screenHeight = 128;
     int8_t maxSpeed = 4;
     int8_t maxForce = 1;
+    int8_t wanderingDistance = 4;
+    byte boundary = 5;
     public :
     void resetAnt(uint16_t screenWidth, uint16_t screenHeight, byte velocity);
     int16_t getCurrentX();
     int16_t getCurrentY();
     int16_t getOldX();
     int16_t getOldY();
-    float getAngle();
-    CoOrds setMagnitude(CoOrds temp, int8_t newMag);
+    int16_t getDesiredX();
+    int16_t getDesiredY();
+    void setState(state newState);
     void setDesired(int16_t x, int16_t y);
-    void calculateVelocties();
+    void seeking(int16_t x, int16_t y);
     void wandering();
     void steering();
     void moveAnt();
-    ;
     private :
     CoOrds currentPos;//where we're at now
     CoOrds oldPos;//used to remove ant from screen
@@ -34,8 +36,8 @@ class Ant {
     CoOrds desiredVelocity;
     CoOrds steeringForce;
     state antState;
-    float angleBetweenTwoPoints(int16_t x1, int16_t y1, int16_t x2, int16_t y2)
-    ;
+    CoOrds setMagnitude(CoOrds temp, int8_t newMag);
+    void calculateVelocties();
 };
 
 #endif

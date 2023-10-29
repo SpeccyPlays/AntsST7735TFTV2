@@ -12,7 +12,7 @@ TFT_ST7735 tft(SCREENWIDTH, SCREENHEIGHT);
 //set up ant
 Ant ants[10];
 
-byte waitDelay = 100;
+byte waitDelay = 50;
 
 void setup() {
   // put your setup code here, to run once:

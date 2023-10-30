@@ -27,7 +27,6 @@ void setup() {
     ants[i].resetAnt(SCREENWIDTH, SCREENHEIGHT, 4);
   }
 }
-
 void loop() {
   // put your main code here, to run repeatedly:
   for (byte i = 0; i < amountOfAnts; i++){
@@ -41,7 +40,7 @@ void loop() {
     //tft.drawLine(ants[i].getCurrentX(), ants[i].getCurrentY(), ants[i].getDesiredX(), ants[i].getDesiredY(), TFT_BLACK);
   }
   counter ++;
-  if (counter % 150 == 0){
+  if (counter % 200 == 0){
     for (byte i = 0; i < amountOfAnts; i++){
       ants[i].setState(WANDER);
     }
@@ -49,8 +48,8 @@ void loop() {
     tft.drawCircle(foodX, foodY, 4, TFT_BLACK);
   }
   else if (counter % 100 == 0){
-    foodX = random(10, (SCREENWIDTH - 10));
-    foodY = random(10, (SCREENHEIGHT - 10));
+    foodX = SCREENWIDTH / 2;
+    foodY = SCREENHEIGHT / 2;
     for (byte i = 0; i < amountOfAnts; i++){
       ants[i].setState(AVOID);
       ants[i].setAvoidPos(foodX, foodY);
@@ -59,4 +58,7 @@ void loop() {
     }
   tft.drawCircle(foodX, foodY, 4, TFT_GREEN);
   }
+}
+void avoidAnAnt(){
+  
 }

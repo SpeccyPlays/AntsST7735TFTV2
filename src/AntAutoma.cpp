@@ -58,9 +58,13 @@ void Ant::slowDown(){
     }
 };
 void Ant::avoiding(){
-    if (detectCollision(avoidPos.x, avoidPos.y, antDetectRadius)){
-        velocity.x += 1;
-        velocity.y += 1;
+    if (detectCollision(avoidPos.x, avoidPos.y, collisionDetectRadius)){
+        if (velocity.x < 0){
+            velocity.x += 1;
+        }
+        else {
+            velocity.x -= 1;
+        }
     }
 };
 void Ant::seeking(int16_t x, int16_t y){
@@ -161,6 +165,9 @@ void Ant::moveAnt(){
         break;
     }
     steering();
+    locomotion();
+};
+void Ant::locomotion(){
     currentPos.x += velocity.x;
     currentPos.y += velocity.y;
 };

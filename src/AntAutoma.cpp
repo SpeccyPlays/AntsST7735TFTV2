@@ -6,8 +6,8 @@ void Ant::resetAnt(uint16_t screenWidth, uint16_t screenHeight, byte velocity){
     this->currentPos.y = random(boundary, screenHeight = boundary);//random(10, screenHeight - 10);
     this->angle = random(360) * PI / 180.0;//convert to radians don't forget
     this->antState = WANDER;
-    this->velocity.x = 2;
-    this->velocity.y = 2;
+    this->velocity.x = velocity;
+    this->velocity.y = velocity;
     this->desired.x = screenWidth /2;
     this->desired.y = screenHeight /2;
 };
@@ -26,10 +26,45 @@ CoOrds Ant::setMagnitude(CoOrds temp, int8_t newMag){
     }
     return temp;
 };
+uint8_t Ant::detectCollision(int16_t x, int16_t y, uint8_t r){
+  /*
+  Check if we're in the circle of x and y
+  Including the radius as there's a different range for if we hit another ant or desired location
+  */
+  int16_t xx = x - currentPos.x;
+  int16_t yy = y - currentPos.y;
+  if ((( xx * xx) + (yy * yy)) < (r * r) ){
+    return 1;
+  }
+  else {
+    return 0;
+  }
+};
+void Ant::slowDown(){
+    /*
+    Slow down if we're nearing the desired target
+
+    */
+    if(detectCollision(desired.x, desired.y, collisionDetectRadius)){
+        if (velocity.x != 0){
+            velocity.x /= 2;
+        }
+        if (velocity.y != 0){
+            velocity.y /= 2;
+        }
+    }
+}
 void Ant::seeking(int16_t x, int16_t y){
     setDesired(x, y);
 };
 void Ant::wandering(){
+    /*
+    Go to a point in front of the ant
+    Pick a random point on a circle from there
+    Set that to where the ant wants to head towards
+    Makes the movement look more natural
+
+    */
     int16_t tempX = currentPos.x + velocity.x * wanderingDistance;
     int16_t tempY = currentPos.y + velocity.y * wanderingDistance;
     float randAngle = random(360) * PI / 180.0;
@@ -103,6 +138,7 @@ void Ant::moveAnt(){
         wandering();
         break;
         case SEEK :
+        slowDown();
         break;
     }
     steering();

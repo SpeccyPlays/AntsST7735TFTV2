@@ -5,7 +5,7 @@
 /*
 This is the class for a single ant in the system
 */
-enum state {WANDER = 0, SEEK = 1};
+enum state {WANDER = 0, SEEK = 1, AVOID = 2};
 class Ant {
     /*
     All the class instances
@@ -29,7 +29,9 @@ class Ant {
     int16_t getDesiredY();
     void setState(state newState);
     void setDesired(int16_t x, int16_t y);
+    void setAvoidPos(int16_t x, int16_t y);
     void seeking(int16_t x, int16_t y);
+    void avoiding();
     void wandering();
     void steering();
     void moveAnt();
@@ -37,8 +39,9 @@ class Ant {
     private :
     CoOrds currentPos;//where we're at now
     CoOrds oldPos;//used to remove ant from screen
-    CoOrds desired;//where we want to go   
-    float angle;//uses radians
+    CoOrds desired;//where we want to go
+    CoOrds avoidPos;//where to avoid
+    float angle;//uses radians - left this here if I want to draw according to direction ant faces
     CoOrds velocity;
     CoOrds desiredVelocity;
     CoOrds steeringForce;

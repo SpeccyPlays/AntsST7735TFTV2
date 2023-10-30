@@ -52,8 +52,10 @@ void loop() {
     foodX = random(10, (SCREENWIDTH - 10));
     foodY = random(10, (SCREENHEIGHT - 10));
     for (byte i = 0; i < amountOfAnts; i++){
-      ants[i].setState(SEEK);
-      ants[i].setDesired(foodX, foodY);
+      ants[i].setState(AVOID);
+      ants[i].setAvoidPos(foodX, foodY);
+      //ants[i].setState(SEEK);
+      //ants[i].setDesired(foodX, foodY);
     }
   tft.drawCircle(foodX, foodY, 4, TFT_GREEN);
   }

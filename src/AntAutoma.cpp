@@ -18,6 +18,10 @@ void Ant::setDesired(int16_t x, int16_t y){
     desired.x = x;
     desired.y = y;
 };
+void Ant::setAvoidPos(int16_t x, int16_t y){
+    avoidPos.x = x;
+    avoidPos.y = y;
+};
 CoOrds Ant::setMagnitude(CoOrds temp, int8_t newMag){
     float length = sqrt((temp.x * temp.x + temp.y * temp.y));
     if (length != 0){
@@ -43,7 +47,6 @@ uint8_t Ant::detectCollision(int16_t x, int16_t y, uint8_t r){
 void Ant::slowDown(){
     /*
     Slow down if we're nearing the desired target
-
     */
     if(detectCollision(desired.x, desired.y, collisionDetectRadius)){
         if (velocity.x != 0){
@@ -53,7 +56,13 @@ void Ant::slowDown(){
             velocity.y /= 2;
         }
     }
-}
+};
+void Ant::avoiding(){
+    if (detectCollision(avoidPos.x, avoidPos.y, antDetectRadius)){
+        velocity.x += 1;
+        velocity.y += 1;
+    }
+};
 void Ant::seeking(int16_t x, int16_t y){
     setDesired(x, y);
 };
@@ -75,7 +84,10 @@ void Ant::wandering(){
 };
 void Ant::calculateVelocties(){
     /*
-    
+    Set the desired velocity to the amount we need to move to desired
+    Reduce the magnitude or it'll go straight there
+    Limit the velocity for the same reason 
+    (I think for the last two)
     */
     desiredVelocity.x = (desired.x - currentPos.x);
     desiredVelocity.y = (desired.y - currentPos.y);
@@ -96,10 +108,13 @@ void Ant::calculateVelocties(){
     }
 };
 void Ant::steering(){
+    /*
+    How much the ant will turn towards it's desired destination
+    Use the class maxforce value to limit or increase the turning force
+    */
     calculateVelocties();
     steeringForce.x = desiredVelocity.x - velocity.x;
     steeringForce.y = desiredVelocity.y - velocity.y;
-
     if (steeringForce.x > maxForce){
         steeringForce.x = maxForce;
     }
@@ -117,7 +132,7 @@ void Ant::steering(){
 };
 void Ant::moveAnt(){
     /*
-
+    Check boundaries first, see what state it's in, then do everything needed to move
     */
     oldPos.x = currentPos.x;
     oldPos.y = currentPos.y;
@@ -139,6 +154,10 @@ void Ant::moveAnt(){
         break;
         case SEEK :
         slowDown();
+        break;
+        case AVOID :
+        avoiding();
+        wandering();
         break;
     }
     steering();
